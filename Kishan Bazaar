@@ -1,0 +1,402 @@
+ <!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kishan Bazaar — Demo</title>
+  <style>
+    :root{
+      --bg:#fbfbf8;
+      --text:#111;
+      --muted:#666;
+      /* default theme = green */
+      --primary:#2f7a3e;
+      --accent:#3da04a;
+      --btn-text:#fff;
+      --highlight:#b8860b;
+    }
+    /* black-yellow theme variables (will be applied via .theme-black) */
+    .theme-black { --primary:#222; --accent:#f5b700; --btn-text:#111; --highlight:#f5b700; --bg:#faf9f5; }
+    /* orange theme (via .theme-orange) */
+    .theme-orange { --primary:#c95a00; --accent:#ff8a00; --btn-text:#fff; --highlight:#895000; --bg:#fff7ef; }
+
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans',sans-serif;margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+    header{background:linear-gradient(90deg,var(--primary),var(--accent));color:var(--btn-text);padding:12px 14px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:20}
+    .logo{font-weight:800;font-size:18px}
+    .tag{font-size:12px;opacity:0.95}
+    .container{padding:12px 12px 84px}
+    h2{font-size:16px;margin:0 0 8px}
+    .card{background:#fff;border-radius:10px;padding:12px;margin:12px 0;box-shadow:0 1px 6px rgba(0,0,0,0.06)}
+    .row{display:flex;gap:8px;align-items:center}
+    .btn{display:inline-block;padding:10px 12px;border-radius:8px;text-decoration:none;color:var(--btn-text);background:var(--primary);font-weight:600;border:none}
+    .btn.ghost{background:transparent;color:var(--primary);border:1px solid rgba(0,0,0,0.06)}
+    label{display:block;font-weight:700;margin-bottom:6px;font-size:14px}
+    input[type=text],input[type=tel],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e6e6;font-size:14px}
+    textarea{min-height:80px}
+    .small{font-size:13px;color:var(--muted)}
+    .muted{color:var(--muted)}
+    .icons{display:flex;gap:10px;overflow:auto;padding:6px 0}
+    .icon{min-width:72px;background:#fff;border-radius:10px;padding:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.04);font-size:13px}
+    .icon svg{width:36px;height:36px}
+    .grid{display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:760px){.grid{grid-template-columns:1fr 1fr}}
+    .machine{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;border:1px dashed #eee;margin-bottom:8px}
+    footer{padding:12px;text-align:center;color:var(--muted);font-size:13px}
+    .fab{position:fixed;right:14px;bottom:72px;width:56px;height:56px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,0.18);z-index:60}
+    .fab a{color:#fff;text-decoration:none;font-weight:700}
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #eee;display:flex;justify-content:space-around;padding:8px 6px;z-index:50}
+    .bn-item{display:flex;flex-direction:column;align-items:center;font-size:12px;color:var(--muted)}
+    .theme-switch{display:flex;gap:6px}
+    .theme-btn{padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);background:transparent;color:var(--btn-text);font-weight:700;cursor:pointer}
+    .search{display:flex;gap:8px;margin-top:8px}
+    .search input{flex:1}
+    .ticker{overflow:hidden;background:#fff;padding:8px;border-radius:8px;margin:8px 0}
+    .ticker p{display:inline-block;white-space:nowrap;animation:slide 14s linear infinite;margin:0}
+    @keyframes slide{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+    /* small helpers */
+    .success{background:#e6ffed;border:1px solid #c6f1d2;color:#0a5a2a;padding:8px;border-radius:8px}
+    .muted-tag{display:inline-block;padding:6px 8px;border-radius:8px;background:#f3f3f3;font-size:13px}
+    .category-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .cat{padding:8px 10px;border-radius:8px;background:#fff;border:1px solid #eee;box-shadow:0 1px 3px rgba(0,0,0,0.03);font-weight:600}
+    .qa-list{margin-top:8px}
+    .qa-item{padding:8px;border-radius:8px;border:1px solid #f0f0f0;margin-bottom:8px;background:#fff}
+  </style>
+</head>
+<body>
+
+  <header>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="logo">Kishan Bazaar</div>
+      <div style="font-size:12px;opacity:0.95">किसान के लिए — बिहारी अंदाज़</div>
+    </div>
+
+    <div style="flex:1"></div>
+
+    <!-- theme toggle -->
+    <div class="theme-switch" aria-hidden="false" title="Theme">
+      <button class="theme-btn" id="themeGreen" style="background:transparent">Green</button>
+      <button class="theme-btn" id="themeOrange">Orange</button>
+      <button class="theme-btn" id="themeBlack">Black</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Search + Ticker -->
+    <div class="card">
+      <div class="search">
+        <input type="text" id="searchBox" placeholder="खोजें — बीज, मशीन, दवा..." />
+        <button class="btn" id="searchBtn">खोजें</button>
+      </div>
+
+      <div class="ticker" style="margin-top:10px">
+        <p>गेहूँ: ₹2200/quintal • मक्का: ₹1800/quintal • चना: ₹3500/quintal • प्याज़: ₹2800/quintal</p>
+      </div>
+
+      <!-- quick categories (icons) -->
+      <div class="icons" aria-hidden="false" style="margin-top:8px">
+        <div class="icon" onclick="scrollToId('seeds')">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#2f7a3e"/></svg>
+          <div>बीज</div>
+        </div>
+        <div class="icon" onclick="scrollToId('fert')">
+          <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" fill="#b8860b"/></svg>
+          <div>खाद</div>
+        </div>
+        <div class="icon" onclick="scrollToId('pest')">
+          <svg viewBox="0 0 24 24"><path d="M4 20 L20 4" stroke="#2f7a3e" stroke-width="3" fill="none"/></svg>
+          <div>दवाई</div>
+        </div>
+        <div class="icon" onclick="scrollToId('machines')">
+          <svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="8" fill="#6b4a1a"/></svg>
+          <div>मशीन</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popular products / slider like -->
+    <section id="seeds" class="card">
+      <h2>लोकप्रिय बीज और उत्पाद</h2>
+      <p class="small">लोकल किसानों के लिए पसंदीदा — सीधे कॉल करके ऑर्डर करें</p>
+      <div style="display:flex;gap:10px;overflow:auto;padding-top:8px">
+        <div style="min-width:160px;background:#fff;padding:10px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.04)">
+          <div style="font-weight:800">गेहूँ - A1</div>
+          <div class="small">उपज उच्च • रोग प्रतिरोधक</div>
+          <div style="margin-top:8px" class="row">
+            <a class="btn" href="tel:+919241930459">Call</a>
+            <a class="btn ghost" href="https://wa.me/919241930459?text=Beej%20chahiye" target="_blank">WhatsApp</a>
+          </div>
+        </div>
+        <div style="min-width:160px;background:#fff;padding:10px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.04)">
+          <div style="font-weight:800">मक्का - B2</div>
+          <div class="small">किराये पर मशीन उपलब्ध</div>
+          <div style="margin-top:8px" class="row">
+            <a class="btn" href="tel:+919241930459">Call</a>
+            <a class="btn ghost" href="https://wa.me/919241930459?text=Makka%20chahiye" target="_blank">WhatsApp</a>
+          </div>
+        </div>
+        <div style="min-width:160px;background:#fff;padding:10px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.04)">
+          <div style="font-weight:800">चना - C3</div>
+          <div class="small">बेहतर दाम के लिए संपर्क करें</div>
+          <div style="margin-top:8px" class="row">
+            <a class="btn" href="tel:+919241930459">Call</a>
+            <a class="btn ghost" href="https://wa.me/919241930459?text=Chana%20chahiye" target="_blank">WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Fasal Becho (Sell your crop) -->
+    <section id="sell" class="card">
+      <h2>फसल बेचें — फॉर्म भरें</h2>
+      <p class="small">हम आपकी फसल खरीदते हैं — नीचे विवरण भेजें, हम संपर्क करेंगे।</p>
+      <form id="sellForm">
+        <label>नाम</label>
+        <input type="text" id="sellName" placeholder="आपका नाम" required />
+        <label>गाँव / थाना</label>
+        <input type="text" id="sellLocation" placeholder="गाँव का नाम" required />
+        <label>फसल का नाम</label>
+        <input type="text" id="sellCrop" placeholder="गेहूँ / चना / मक्का" required />
+        <label>मात्रा (kg / क्विंटल)</label>
+        <input type="text" id="sellQty" placeholder="उदाहरण: 500 kg" required />
+        <label>Phone (WhatsApp)</label>
+        <input type="tel" id="sellPhone" placeholder="मोबाइल नंबर" required />
+        <div style="margin-top:8px"><button class="btn" type="submit">भेजें</button></div>
+      </form>
+      <div id="sellResult" style="margin-top:8px"></div>
+
+      <div style="margin-top:12px">
+        <h3>Pending Sell Requests</h3>
+        <div id="sellList" class="muted small"></div>
+      </div>
+    </section>
+
+    <!-- Machines -->
+    <section id="machines" class="card">
+      <h2>स्थानीय मशीनें (किराया/बुकिंग)</h2>
+      <p class="small">ट्रैक्टर, पावर टिलर, कंबाइन हार्वेस्टर, मेज़र थ्रेसर, रोटावेटर — कॉल/व्हाट्सएप करें</p>
+
+      <div id="machineList">
+        <div class="machine">
+          <div><strong>Tractor (ट्रैक्टर)</strong><div class="muted">किराया पर उपलब्ध</div></div>
+          <div class="row"><a class="btn" href="tel:+919241930459">Call</a><a class="btn ghost" href="https://wa.me/919241930459?text=Tractor%20rent%20chaahiye" target="_blank">WhatsApp</a></div>
+        </div>
+
+        <div class="machine">
+          <div><strong>Power Tiller (पावर टिलर)</strong><div class="muted">किराया / खरीद</div></div>
+          <div class="row"><a class="btn" href="tel:+919241930459">Call</a><a class="btn ghost" href="https://wa.me/919241930459?text=Power%20Tiller%20chaahiye" target="_blank">WhatsApp</a></div>
+        </div>
+
+        <div class="machine">
+          <div><strong>Combine Harvester (कंबाइन हार्वेस्टर)</strong><div class="muted">बुकिंग के लिए कॉल करें</div></div>
+          <div class="row"><a class="btn" href="tel:+919241930459">Call</a><a class="btn ghost" href="https://wa.me/919241930459?text=Combine%20harvester%20book%20karna%20hai" target="_blank">WhatsApp</a></div>
+        </div>
+
+        <div class="machine">
+          <div><strong>Major Thresher (मेज़र थ्रेसर)</strong><div class="muted">ठोस थ्रेशिंग</div></div>
+          <div class="row"><a class="btn" href="tel:+919241930459">Call</a><a class="btn ghost" href="https://wa.me/919241930459?text=Thresher%20rent%20chaahiye" target="_blank">WhatsApp</a></div>
+        </div>
+
+        <div class="machine">
+          <div><strong>Rotavator (रोटावेटर)</strong><div class="muted">खेत तैयार करने के लिए</div></div>
+          <div class="row"><a class="btn" href="tel:+919241930459">Call</a><a class="btn ghost" href="https://wa.me/919241930459?text=Rotavator%20chahiye" target="_blank">WhatsApp</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Q&A (Ask) -->
+    <section id="qa" class="card">
+      <h2>सवाल-जबाव (Q&A)</h2>
+      <p class="small">समस्या की फोटो और छोटा विवरण भेजें — हम सरल उत्तर देंगे और संबंधित उत्पाद सुझाएंगे।</p>
+
+      <form id="askForm">
+        <label>नाम (गाँव)</label>
+        <input type="text" id="askName" placeholder="आपका नाम" required />
+        <label>Phone (WhatsApp)</label>
+        <input type="tel" id="askPhone" placeholder="मोबाइल नंबर" required />
+        <label>Photo (विकल्प)</label>
+        <input type="file" id="askImage" accept="image/*" />
+        <img id="askPreview" class="preview-img" style="display:none;max-width:140px;margin-top:8px;border-radius:8px"/>
+        <label>संक्षेप (3-4 शब्द)</label>
+        <textarea id="askText" placeholder="उदा: पत्तियाँ पीली, कीट के दाग..."></textarea>
+        <div style="margin-top:8px"><button class="btn" type="submit">जमा करें</button></div>
+      </form>
+
+      <div id="askResult" style="margin-top:8px"></div>
+
+      <div class="qa-list" id="qaList">
+        <!-- saved Q&A items show here -->
+      </div>
+    </section>
+
+    <!-- Seed / Tool suggestion -->
+    <section id="fert" class="card">
+      <h2>दवा / खाद सुझाव</h2>
+      <div class="grid">
+        <div><strong>Neem oil / Fungicide</strong><div class="small">पत्ती की सफेदी/फफूंदी में</div></div>
+        <div><strong>Urea / DAP</strong><div class="small">बुवाई के समय और नाइट्रोजन के लिए</div></div>
+      </div>
+    </section>
+
+    <!-- UPI & Social -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <div>
+          <div class="small">UPI ID</div>
+          <div style="font-weight:800">9631016231@upi</div>
+        </div>
+        <div style="text-align:right">
+          <div class="small">Contact (WhatsApp)</div>
+          <div style="font-weight:800">+91 9241930459</div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <a href="#" class="btn ghost">Instagram</a>
+        <a href="#" class="btn ghost">Facebook</a>
+        <a href="#" class="btn ghost">YouTube</a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="small">Developed for Bihar kisan — Mobile-first demo</div>
+    <div style="margin-top:6px" class="small">Contact: +91 9241930459 • UPI: 9631016231@upi</div>
+  </footer>
+
+  <!-- Floating WhatsApp -->
+  <div class="fab" title="WhatsApp पर बात करें">
+    <a href="https://wa.me/919241930459?text=नमस्ते%20मुझे%20मदद%20चाहिए" target="_blank">WA</a>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <div class="bn-item" onclick="scrollTo('top')">🏠<div>होम</div></div>
+    <div class="bn-item" onclick="scrollToId('seeds')">📦<div>उत्पाद</div></div>
+    <div class="bn-item" onclick="scrollToId('qa')">❓<div>Q&A</div></div>
+    <div class="bn-item" onclick="scrollToId('sell')">💰<div>बेचें</div></div>
+    <div class="bn-item" onclick="scrollToId('machines')">🚜<div>मशीन</div></div>
+  </div>
+
+  <script>
+    // theme buttons
+    const body = document.body;
+    document.getElementById('themeGreen').addEventListener('click', ()=>{ body.classList.remove('theme-orange','theme-black'); });
+    document.getElementById('themeOrange').addEventListener('click', ()=>{ body.classList.add('theme-orange'); body.classList.remove('theme-black'); });
+    document.getElementById('themeBlack').addEventListener('click', ()=>{ body.classList.add('theme-black'); body.classList.remove('theme-orange'); });
+
+    // helper scroll
+    function scrollToId(id){ document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'}); }
+    function scrollTo(loc){ if(loc==='top') window.scrollTo({top:0,behavior:'smooth'}); }
+
+    // Ask form (Q&A) logic - store in localStorage
+    const askForm = document.getElementById('askForm');
+    const askPreview = document.getElementById('askPreview');
+    const askImage = document.getElementById('askImage');
+    const askResult = document.getElementById('askResult');
+    const qaList = document.getElementById('qaList');
+
+    if(askImage){
+      askImage.addEventListener('change', ()=>{
+        const f = askImage.files[0];
+        if(!f) { askPreview.style.display='none'; return; }
+        const url = URL.createObjectURL(f);
+        askPreview.src = url; askPreview.style.display='block';
+      });
+    }
+
+    function renderQA(){
+      const arr = JSON.parse(localStorage.getItem('qa')||'[]');
+      if(arr.length===0){ qaList.innerHTML = '<div class="small muted">कोई सवाल अभी नहीं। आप पहला सवाल भेजें।</div>'; return; }
+      qaList.innerHTML = arr.map(item=>{
+        const imgHtml = item.img?`<div style="margin-top:8px"><img src="${item.img}" style="max-width:140px;border-radius:8px"/></div>`:'';
+        return `<div class="qa-item"><div style="font-weight:700">${escapeHtml(item.name)} • ${escapeHtml(item.phone)}</div><div class="small muted" style="margin-top:6px">${escapeHtml(item.text)}</div>${imgHtml}<div style="margin-top:8px" class="small muted">प्राप्त: ${escapeHtml(item.time)}</div></div>`;
+      }).join('');
+    }
+
+    function escapeHtml(s){ return String(s).replace(/[&<>"'\/]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',\"'\":'&#39;','/':'&#x2F;'}[c]; }); }
+
+    askForm.addEventListener('submit', e=>{
+      e.preventDefault();
+      const name = document.getElementById('askName').value.trim();
+      const phone = document.getElementById('askPhone').value.trim();
+      const text = document.getElementById('askText').value.trim();
+      const time = new Date().toLocaleString();
+      // image: if present, convert to dataURL
+      if(askImage && askImage.files[0]){
+        const reader = new FileReader();
+        reader.onload = function(ev){
+          saveQA({name,phone,text,time,img:ev.target.result});
+        }
+        reader.readAsDataURL(askImage.files[0]);
+      } else {
+        saveQA({name,phone,text,time,img:null});
+      }
+    });
+
+    function saveQA(obj){
+      const arr = JSON.parse(localStorage.getItem('qa')||'[]');
+      arr.unshift(obj);
+      localStorage.setItem('qa', JSON.stringify(arr));
+      askResult.innerHTML = '<div class="success">धन्यवाद! आपका सवाल मिल गया। हम जल्द जवाब देंगे।</div>';
+      askForm.reset(); if(askPreview) askPreview.style.display='none';
+      renderQA();
+      // scroll to QA list
+      setTimeout(()=>{ scrollToId('qa'); }, 200);
+    }
+
+    // Sell form logic (store in localStorage demo)
+    const sellForm = document.getElementById('sellForm');
+    const sellResult = document.getElementById('sellResult');
+    const sellList = document.getElementById('sellList');
+
+    function refreshSellList(){
+      const arr = JSON.parse(localStorage.getItem('sells')||'[]');
+      if(arr.length===0){ sellList.innerHTML = '<div class="small muted">Koi pending request nahi (demo)</div>'; return; }
+      sellList.innerHTML = arr.map(it=>{
+        return `<div style="padding:8px;border-radius:8px;border:1px solid #f0f0f0;margin-bottom:8px">
+          <div style="font-weight:700">${escapeHtml(it.crop)} — ${escapeHtml(it.qty)}</div>
+          <div class="small muted">${escapeHtml(it.name)} • ${escapeHtml(it.location)}</div>
+          <div style="margin-top:8px" class="row">
+            <a class="btn" href="tel:${escapeHtml(it.phone)}">Call</a>
+            <a class="btn ghost" href="https://wa.me/${escapeHtml(it.phone.replace(/\\D/g,''))}?text=Main%20aapki%20fasal%20le%20na%20chahta%20hun%20(${encodeURIComponent(it.crop)}%20${encodeURIComponent(it.qty)})" target="_blank">WhatsApp</a>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    if(sellForm){
+      sellForm.addEventListener('submit', e=>{
+        e.preventDefault();
+        const data = {
+          name: document.getElementById('sellName').value.trim(),
+          location: document.getElementById('sellLocation').value.trim(),
+          crop: document.getElementById('sellCrop').value.trim(),
+          qty: document.getElementById('sellQty').value.trim(),
+          phone: document.getElementById('sellPhone').value.trim(),
+          time: new Date().toLocaleString()
+        };
+        const arr = JSON.parse(localStorage.getItem('sells')||'[]'); arr.unshift(data); localStorage.setItem('sells', JSON.stringify(arr));
+        sellResult.innerHTML = '<div class="success">Form mil gaya. Hum jald contact karenge (demo).</div>';
+        sellForm.reset(); refreshSellList();
+      });
+    }
+
+    // search button (simple filter demo)
+    document.getElementById('searchBtn').addEventListener('click', ()=>{
+      const q = document.getElementById('searchBox').value.trim().toLowerCase();
+      if(!q) { alert('खोज शब्द डालें (उदा: बीज, ट्रैक्टर)'); return; }
+      alert('Demo search: "'+q+'". (Full search requires backend/indexing)');
+    });
+
+    // init
+    renderQA();
+    refreshSellList();
+
+    // small UX: enable ENTER to submit search
+    document.getElementById('searchBox').addEventListener('keypress', function(e){ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('searchBtn').click(); }});
+  </script>
+</body>
+</html>
